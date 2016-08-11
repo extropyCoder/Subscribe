@@ -1,4 +1,8 @@
-import "Standard.sol";
+import "StandardContract.sol";
 contract Subscribe is StandardContract {
+
+function Subscribe(){
+  
+}
 
 }
