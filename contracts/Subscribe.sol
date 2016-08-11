@@ -39,7 +39,7 @@ address authorizingContract;
 
 modifier onlyAuthorizer(){if (msg.sender==authorizingContract) _}
 modifier validAccount(uint _accountID){if (_accountID < accounts.length && accounts[_accountID].active==true) _}
-
+modifier rentalAuthorizedFor(uint _accountID,uint _rentalID) {if(_rentalID<rentals.length && rentals[_rentalID].active==true && rentals[_rentalID].authorize==true ) _}
 
 function Subscribe(address _authorizingContract){
   owned();
