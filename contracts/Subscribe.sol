@@ -10,6 +10,7 @@ struct AccountDetails {
   string name;
   string email;
   uint balance;
+  bool active;
 }
 
 AccountDetails [] accounts;
@@ -18,23 +19,46 @@ struct MediaDetails{
   string name;
   string URL;
   uint price;
+  bool active;
+}
+
+struct Rental {
+  uint accountID;
+  uint mediaID;
+  uint startTime;
+  uint duration;
+  bool active;
+  bool authorize;
 }
 
 MediaDetails [] media;
+Rental [] rentals;
 
-function Subscribe(){
+event RentalAuthorized(uint accountID,uint mediaID);
+address authorizingContract;
+
+modifier onlyAuthorizer(){if (msg.sender==authorizingContract) _}
+modifier validAccount(uint _accountID){if (_accountID < accounts.length && accounts[_accountID].active==true) _}
+
+
+function Subscribe(address _authorizingContract){
   owned();
-
+  authorizingContract = _authorizingContract;
 }
 
 function addAccount(string _name, string _email) external  hasWriteRights(this,msg.sender)  returns (uint) {
-  accounts[accounts.length++] = AccountDetails(_name,_email,0);
+  accounts[accounts.length++] = AccountDetails(_name,_email,0,true);
   return accounts.length;
 }
 
 function addMedia(string _name,string URL,uint _price) external  hasWriteRights(this,msg.sender)  returns (uint){
-    media[media.length++] = MediaDetails(_name,URL,_price);
+    media[media.length++] = MediaDetails(_name,URL,_price,true);
     return media.length;
+}
+
+function authorizeRental(uint _rentalID) onlyAuthorizer {
+  rentals[_rentalID].authorize = true;
+  RentalAuthorized(rentals[_rentalID].accountID,_rentalID);
 }
 
 }
