@@ -67,13 +67,7 @@ contract StandardContract is Owned,Mortal,Active,Permissionable{
     }
 
 
-    function activateContract(NameRegistry _registry) onlyOwner{
-        registry = _registry;
-        PermissionsDB permissionsDB = PermissionsDB (registry.getMapping(SECURITY_NAME));
-        setPermissionsDB(permissionsDB);
-        logger = Logger (registry.getMapping(LOGGER_NAME));
-        setActive(true);
-    }
+    function activate(NameRegistry _registry,address _address) onlyOwner;
 
     function setAsController(address _dbAddress){
       registry.addDatabase(this,_dbAddress);
@@ -91,6 +85,37 @@ contract StandardContract is Owned,Mortal,Active,Permissionable{
     }
 
 }
+
+
+contract StandardController is StandardContract{
+
+  function activateController(NameRegistry _registry,address _databaseAddress) onlyOwner {
+    registry = _registry;
+    PermissionsDB permissionsDB = PermissionsDB (registry.getMapping(SECURITY_NAME));
+    setPermissionsDB(permissionsDB);
+    logger = Logger (registry.getMapping(LOGGER_NAME));
+    setActive(true);
+    setAsController(_databaseAddress);
+  }
+
+
+}
+
+contract StandardDatabase is StandardContract{
+
+  function activateDatabase(NameRegistry _registry,address _controllerAddress) onlyOwner {
+    registry = _registry;
+    PermissionsDB permissionsDB = PermissionsDB (registry.getMapping(SECURITY_NAME));
+    setPermissionsDB(permissionsDB);
+    logger = Logger (registry.getMapping(LOGGER_NAME));
+    setActive(true);
+    setAsDatabase(_controllerAddress);
+  }
+
+
+}
+
+
 
 contract NameRegistry is Owned,Mortal{
 

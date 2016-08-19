@@ -4,7 +4,7 @@ contract Account is StandardContract{
 
 }
 
-contract Subscribe is StandardContract {
+contract Subscribe is StandardController {
 
 struct AccountDetails {
   string name;
@@ -41,10 +41,15 @@ modifier onlyAuthorizer(){if (msg.sender==authorizingContract) _}
 modifier validAccount(uint _accountID){if (_accountID < accounts.length && accounts[_accountID].active==true) _}
 modifier rentalAuthorizedFor(uint _accountID,uint _rentalID) {if(_rentalID<rentals.length && rentals[_rentalID].active==true && rentals[_rentalID].authorize==true ) _}
 
-function Subscribe(address _authorizingContract){
+function Subscribe(){
   owned();
+}
+
+function activate(NameRegistry _registry,address _authorizingContract) onlyOwner {
+  activateController(_registry,_authorizingContract);
   authorizingContract = _authorizingContract;
 }
+
 
 function addAccount(string _name, string _email) external  hasWriteRights(this,msg.sender)  returns (uint) {
   accounts[accounts.length++] = AccountDetails(_name,_email,0,true);
