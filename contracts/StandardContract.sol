@@ -1,7 +1,8 @@
+pragma solidity ^0.4.1;
 contract Owned  {
   address owner;
   modifier onlyOwner() {
-    if (msg.sender==owner) _
+    if (msg.sender==owner) throw ; _;
   }
   function owned() {
     owner = msg.sender;
@@ -24,7 +25,7 @@ contract Mortal is Owned {
 contract Active is Owned{
   bool active;
 
-  modifier isActive(){if (active==true || msg.sender==owner)  _}
+  modifier isActive(){if (active==true || msg.sender==owner)  throw ; _;}
 
   function setActive(bool _active) onlyOwner {
     active = _active;
@@ -35,9 +36,9 @@ contract Active is Owned{
 contract Permissionable  {
     PermissionsDB permissionsDB;
 
-    modifier hasAdminRights(address _contract,address _user){if(permissionsDB.hasAdminRights(_user)==true) _}
-    modifier hasWriteRights(address _contract,address _user){if(permissionsDB.hasWriteRights(_contract,_user)==true) _}
-    modifier hasReadRights (address _contract,address _user){if(permissionsDB.hasReadRights (_contract,_user)==true) _}
+    modifier hasAdminRights(address _contract,address _user){if(permissionsDB.hasAdminRights(_user)==true) throw ; _;}
+    modifier hasWriteRights(address _contract,address _user){if(permissionsDB.hasWriteRights(_contract,_user)==true) throw ; _;}
+    modifier hasReadRights (address _contract,address _user){if(permissionsDB.hasReadRights (_contract,_user)==true) throw ; _;}
 
     function setPermissionsDB(PermissionsDB _permissionsDB){
       permissionsDB  = _permissionsDB;
@@ -54,11 +55,11 @@ contract StandardContract is Owned,Mortal,Active,Permissionable{
     Logger logger;
 
     modifier onlyController(){
-      if(msg.sender==controller) _
+      if(msg.sender==controller) throw ; _;
     }
 
     modifier onlyControllerOrOwner(){
-      if(msg.sender==controller ||msg.sender==owner ) _
+      if(msg.sender==controller ||msg.sender==owner ) throw ; _;
     }
 
 
@@ -164,7 +165,7 @@ contract Logger{
     event LogNormalEvent(address indexed sender, bytes32 msg);
     event LogDebugEvent(address indexed sender, bytes32 msg);
 
-    modifier isDebug(){if(logLevel==LogLevel.DEBUG) _ }
+    modifier isDebug(){if(logLevel==LogLevel.DEBUG) throw ; _; }
 
     function setLevel(LogLevel _logLevel) external {
         logLevel = _logLevel;
@@ -190,7 +191,7 @@ contract Logger{
 contract PermissionsDB is Owned,Mortal {
 
     modifier onlyControllerOrOwner() {
-      if (msg.sender== controller || msg.sender==owner ) _
+      if (msg.sender== controller || msg.sender==owner ) throw ; _;
     }
 
     mapping(address =>mapping(address=>uint8)) contractPermissions;
